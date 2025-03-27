@@ -7,6 +7,16 @@ invoke it forwarding all arguments.
 
 if `tb-$cmd` is nof found, it will invoke `toolbox` forwarding all arguments.
 
+## Installation
+
+This project is a collection of bash scripts, so the installation is pretty simple:
+
+- copy files from src/* to a dir that is available in your `PATH` variable;
+- create a folder `~/.config/tb/boxes` (if using the default base dir path).
+
+A Makefile is provided for convenience, scripts will be installed at `$HOME/.local/bin` by default, all you need to do
+is run `make install`; it will also create a bashrc file in `$HOME/.bashrc.d/tb.bashrc`.
+
 ## Conainer and "Boxes"
 
 This tool has the concept of "boxes", that is, each container managed by toolbox is considered a "box", pretty obvious, right?
