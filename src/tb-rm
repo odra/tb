@@ -1,0 +1,10 @@
+#!/bin/bash
+BOX_NAME="${1}"
+
+podman container exists ${BOX_NAME}-box
+if [ "$?" != "0" ]; then
+    echo "box ${BOX_NAME} does not exist"
+    exit 1
+fi
+
+podman rm -f ${BOX_NAME}-box > /dev/null
