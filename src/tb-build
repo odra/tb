@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+
+if [ -z "${TB_BASE_DIR}" ]; then
+    TB_BASE_DIR="${HOME}/.config/tb"
+fi
+
+BOX_NAME="${1}"
+BOX_DIR="${TB_BASE_DIR}/boxes/${BOX_NAME}"
+
+if [ ! -f "${BOX_DIR}/Containerfile" ]; then
+    echo "Cannot find box: ${BOX_DIR}"
+    exit 1
+fi
+
+podman build \
+    -f "${BOX_DIR}/Containerfile" \
+    -t localhost/${BOX_NAME}-box:latest \
+    ${BOX_DIR}
