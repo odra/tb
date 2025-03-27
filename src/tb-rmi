@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+if [ -z "${TB_BASE_DIR}" ]; then
+    TB_BASE_DIR="${HOME}/.config/tb"
+fi
+
+BOX_NAME="${1}"
+
+podman rmi localhost/${BOX_NAME}-box:latest
