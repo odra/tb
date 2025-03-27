@@ -1,0 +1,22 @@
+#!/bin/bash
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+BOX_NAME="${1}"
+BOX_IMAGE="localhost/${BOX_NAME}-box:latest"
+
+shift 1
+BOX_CMD="${@}"
+
+podman image exists ${BOX_IMAGE}
+if [ "$?" != "0" ]; then
+    ${SCRIPT_DIR}/tb-build ${BOX_NAME}
+fi
+
+podman container exists ${BOX_NAME}-box
+if [ "$?" != "0" ]; then
+    toolbox create --image ${BOX_IMAGE} ${BOX_NAME}-box > /dev/null
+fi
+
+toolbox run -c ${BOX_NAME}-box ${BOX_CMD}
+
+podman rm -f ${BOX_NAME}-box > /dev/null
