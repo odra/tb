@@ -77,8 +77,8 @@ This command is similar to `toolbox run ...`, that is, it will run a command ins
 tb exec [--build] [--keepme] BOX_NAME COMMAND [ARGS...]
 ```
 
-* `--build`: optional flag argument that indicates a new image should be build for that box
-* `--keepme`: optional flag argument to keep the box container alive after the command execution
+* `--skip-build`: optional flag argument that indicates that the container image should not be built
+* `--keep`: optional flag argument to keep the box container alive after the command execution
 * `BOX_NAME`: the box name to run
 * `COMMAND` the command to run
 * `ARGS`: optional COMMAND arguments
@@ -88,9 +88,9 @@ Examples:
 ```
 $ tb exec dev make
 $ tb exec dev gcc -o myprogram myprogram.c
-$ tb exec --build py3dev tox
-$ tb exec --keepme dev make
-$ tb exec --build --keepme dev make
+$ tb exec --skip-build py3dev tox
+$ tb exec --keep dev make
+$ tb exec --skip-build --keepme dev make
 ```
 
 ### rm

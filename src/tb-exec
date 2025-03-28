@@ -1,16 +1,39 @@
 #!/bin/bash
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
-BOX_NAME="${1}"
+CONTAINER_KEEP="N"
+BUILD_SKIP="N"
+BOX_CMD=""
+BOX_NAME=""
+
+while [[ "${#}" -gt 0 ]]; do
+    case "${1}" in
+        --keep)
+            CONTAINER_KEEP="Y"
+            shift 1
+            ;;
+        --skip-build)
+            BUILD_SKIP="Y"
+            shift 1
+            ;;
+        *)            
+            BOX_NAME="${1}"
+            shift
+
+            BOX_CMD="${@}"
+            break
+    esac
+done
+
 BOX_IMAGE="localhost/${BOX_NAME}-box:latest"
 
-shift 1
-BOX_CMD="${@}"
-
-podman image exists ${BOX_IMAGE}
-if [ "$?" != "0" ]; then
-    ${SCRIPT_DIR}/tb-build ${BOX_NAME}
+if [ "${BUILD_SKIP}" == "N" ]; then
+    podman image exists ${BOX_IMAGE}
+    if [ "$?" != "0" ]; then
+        ${SCRIPT_DIR}/tb-build ${BOX_NAME}
+    fi
 fi
+
 
 podman container exists ${BOX_NAME}-box
 if [ "$?" != "0" ]; then
@@ -19,4 +42,6 @@ fi
 
 toolbox run -c ${BOX_NAME}-box ${BOX_CMD}
 
-podman rm -f ${BOX_NAME}-box > /dev/null
+if [ "${CONTAINER_KEEP}" == "N" ]; then
+    podman rm -f ${BOX_NAME}-box > /dev/null
+fi
