@@ -1,0 +1,6 @@
+#!/bin/bash
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+BOX_NAME="${1}"
+
+toolbox enter ${BOX_NAME}-box
