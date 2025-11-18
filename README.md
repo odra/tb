@@ -49,14 +49,39 @@ Box names are picked up by their dir names, so "kdev" and "py3" should be used a
 
 ### build
 
-Builds a box by its name (see the Configuration section).
+Builds a container image by the box name and an optional base (if more than one is provided).
 
-The resulting image will be tagged as `localhost/$BOX_NAME-box:latest`.
+#### Arguments
 
-Examples:
+| Name     | Type             | Description                                                       |
+|----------|------------------|-------------------------------------------------------------------|
+| box_name | Positional       | The box name to build (required)                                  |
+| base     | Optional<String> | Builds `Containerfile.$base` into `localhost/$box_name-box:$base` |
+
+#### Environment Variables
+
+| Name          | Type             | Description                          |
+|---------------|------------------|--------------------------------------|
+| TB_BUILD_OPTS | String | Optional build args to use with `podman build` |
+
+#### Examples
+
+Builds `$TB_BASE_DIR/$box_name/Containerfile` into `localhost/py3-box:latest`:
 
 ```
 $ tb build py3
+```
+
+Builds `$TB_BASE_DIR/$box_name/Containerfile.ubuntu` into `localhost/py3-box:ubuntu`:
+
+```
+$ tb build --base=ubuntu py3
+```
+
+Adding `--no-cache` to the build command:
+
+```
+$ TB_BUILD_OPTS='--no-cache' tb build py3
 ```
 
 ### rmi
