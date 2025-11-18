@@ -1,19 +1,34 @@
 #!/bin/bash
 set -e
 
+BOX_NAME=""
+CFILE="Containerfile"
+
+for arg in "$@"; do
+    case $arg in
+        --base=*)
+        CFILE="Containerfile.${arg#*=}"
+        shift
+        ;;
+    *)            
+        BOX_NAME="${1}"
+        shift
+  esac
+done
+
 if [ -z "${TB_BASE_DIR}" ]; then
     TB_BASE_DIR="${HOME}/.config/tb"
 fi
 
-BOX_NAME="${1}"
 BOX_DIR="${TB_BASE_DIR}/boxes/${BOX_NAME}"
 
-if [ ! -f "${BOX_DIR}/Containerfile" ]; then
-    echo "Cannot find box: ${BOX_DIR}"
+if [ ! -f "${BOX_DIR}/${CFILE}" ]; then
+    echo "Cannot find: ${BOX_DIR}/${CFILE}"
     exit 1
 fi
 
 podman build \
-    -f "${BOX_DIR}/Containerfile" \
+    ${TB_BUILD_OPTS} \
+    -f "${BOX_DIR}/${CFILE}" \
     -t localhost/${BOX_NAME}-box:latest \
     ${BOX_DIR}
