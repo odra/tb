@@ -1,0 +1,72 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+IS_ONESHOT="N"
+SKIP_BUILD="N"
+CLEANUP="N"
+BASE=""
+
+for arg in "$@"; do
+#while [[ $# -gt 0 ]]; do
+    #case "$1" in
+    case $arg in
+        --base=*)
+            BASE="${arg#*=}"
+            #BASE=${1#*=}
+            shift
+            ;;
+        --oneshot)
+            IS_ONESHOT="Y"
+            shift 1
+            ;;
+        --skip-build)
+            SKIP_BUILD="Y"
+            shift 1
+            ;;
+    *)
+        if [ -z "${BOX_NAME}" ]; then
+            BOX_NAME="${1}"
+            shift 1
+        fi
+        ;;
+  esac
+done
+
+BOX_ARGS="$@"
+
+(
+if [ "${SKIP_BUILD}" == "N" ]; then
+    if [ -z "${BASE}" ]; then
+        exec ${SCRIPT_DIR}/tb-build ${BOX_NAME}
+    else
+        exec ${SCRIPT_DIR}/tb-build --base=${BASE} ${BOX_NAME}
+    fi
+fi
+)
+if [ $? -ne 0 ]; then
+	exit $?
+fi
+
+BOX_IMAGE=localhost/${BOX_NAME}-box
+BOX_CONTAINER=${BOX_NAME}
+if [ -z "${BASE}" ]; then
+    BOX_IMAGE="${BOX_IMAGE}:latest"
+    BOX_CONTAINER="${BOX_CONTAINER}-box"
+else
+    BOX_IMAGE="${BOX_IMAGE}:${BASE}"
+    BOX_CONTAINER="${BOX_CONTAINER}-${BASE}-box" 
+fi
+
+
+podman container exists ${BOX_CONTAINER}
+if [ "$?" != "0" ]; then
+    toolbox create --image ${BOX_IMAGE} ${BOX_CONTAINER}
+fi
+
+toolbox run -c ${BOX_CONTAINER} ${BOX_ARGS}
+
+if [ "${IS_ONESHOT}" == "Y" ]; then
+    echo "[INFO] Deleting ${BOX_CONTAINER}"
+    podman rm -f ${BOX_CONTAINER}
+fi
