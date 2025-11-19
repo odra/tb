@@ -2,12 +2,14 @@
 set -e
 
 BOX_NAME=""
+BOX_TAG=latest
 CFILE="Containerfile"
 
 for arg in "$@"; do
     case $arg in
         --base=*)
         CFILE="Containerfile.${arg#*=}"
+        BOX_TAG="${arg#*=}"
         shift
         ;;
     *)            
@@ -30,5 +32,5 @@ fi
 podman build \
     ${TB_BUILD_OPTS} \
     -f "${BOX_DIR}/${CFILE}" \
-    -t localhost/${BOX_NAME}-box:latest \
+    -t localhost/${BOX_NAME}-box:${BOX_TAG} \
     ${BOX_DIR}
