@@ -4,10 +4,8 @@ set -e
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 SCRIPT_PATH="${SCRIPT_DIR}/tb-${1}"
 
-shift
-
 if [ ! -f ${SCRIPT_PATH} ]; then
-    toolbox "$@"
+    exec toolbox "$@"
 else
-    ${SCRIPT_PATH} "$@"
+    exec ${SCRIPT_PATH} "$@"
 fi
